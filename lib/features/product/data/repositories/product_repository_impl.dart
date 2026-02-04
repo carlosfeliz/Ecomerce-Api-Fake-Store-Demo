@@ -15,9 +15,9 @@ class ProductRepositoryImpl implements ProductRepository {
   });
 
   @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  Future<Either<Failure, List<Product>>> getProducts({String? category}) async {
     try {
-      final remoteProducts = await remoteDataSource.getProductsFromApi();
+      final remoteProducts = await remoteDataSource.getProductsFromApi(category: category);
       await localDataSource.cacheProducts(remoteProducts);
       return Right(remoteProducts);
     } catch (e) {

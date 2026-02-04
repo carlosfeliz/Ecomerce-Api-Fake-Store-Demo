@@ -10,16 +10,30 @@ part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetProducts getProducts;
+  List<Product> _allProducts = [];
 
   ProductBloc({required this.getProducts}) : super(ProductInitial()) {
     on<GetProductEvent>((event, emit) async {
       emit(ProductLoading());
-      final failureOrProducts = await getProducts(NoParams());
+      final failureOrProducts = await getProducts(ProductParams(category: event.category));
 
       failureOrProducts.fold(
         (failure) => emit(ProductError(_mapFailureToMessage(failure))),
-        (products) => emit(ProductLoaded(products)),
+        (products) {
+          _allProducts = products;
+          emit(ProductLoaded(products));
+        },
       );
+    });
+
+    on<SearchProductsEvent>((event, emit) {
+      if (_allProducts.isEmpty) return;
+
+      final filteredProducts = _allProducts.where((product) {
+        return product.title.toLowerCase().contains(event.query.toLowerCase());
+      }).toList();
+
+      emit(ProductLoaded(filteredProducts));
     });
   }
 

@@ -7,4 +7,20 @@ abstract class ProductEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetProductEvent extends ProductEvent {}
+class GetProductEvent extends ProductEvent {
+  final String? category;
+
+  const GetProductEvent({this.category});
+
+  @override
+  List<Object> get props => [category ?? ''];
+}
+
+class SearchProductsEvent extends ProductEvent {
+  final String query;
+
+  const SearchProductsEvent(this.query);
+
+  @override
+  List<Object> get props => [query];
+}
